@@ -1,14 +1,14 @@
-import type { Camera } from "./camera.ts";
-import type { ControlPointStore, ControlPoint } from "./controlPoints.ts";
-import type { WarpOptions } from "./state.ts";
+import type { Camera } from './camera.ts';
+import type { ControlPointStore, ControlPoint } from './controlPoints.ts';
+import type { WarpOptions } from './state.ts';
 
-const COLOR_MOVING = "#E83E8C";
+const COLOR_MOVING = '#E83E8C';
 /** White fill + Deep Black outline: the only pairing that holds on both dark
  *  and light photos. Shape (diamond vs disc) keeps it distinct from a handle. */
-const COLOR_ANCHOR = "#FFFFFF";
-const COLOR_ANCHOR_LINE = "#151016";
-const COLOR_ORIGIN = "#ffffff";
-const COLOR_SELECT = "#ffffff";
+const COLOR_ANCHOR = '#FFFFFF';
+const COLOR_ANCHOR_LINE = '#151016';
+const COLOR_ORIGIN = '#ffffff';
+const COLOR_SELECT = '#ffffff';
 
 function isMoving(p: ControlPoint): boolean {
   return !p.anchor && (p.tx !== p.ox || p.ty !== p.oy);
@@ -25,7 +25,9 @@ export function drawOverlay(
 ): void {
   // Note: the caller clears the overlay once per frame (detection layers draw
   // underneath these handles), so this function must not clear.
-  if (!options.showControlPoints) return;
+  if (!options.showControlPoints) {
+    return;
+  }
 
   // Edit radius ring around the selected moving handle (context for locality).
   const sel = store.get(store.selectedId);
@@ -33,7 +35,7 @@ export function drawOverlay(
     const [sx, sy] = camera.toScreen(sel.ox, sel.oy);
     ctx.beginPath();
     ctx.arc(sx, sy, options.radius * camera.scale, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(232,62,140,0.35)";
+    ctx.strokeStyle = 'rgba(232,62,140,0.35)';
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     ctx.stroke();
@@ -54,7 +56,7 @@ export function drawOverlay(
         ctx.beginPath();
         ctx.moveTo(ox, oy);
         ctx.lineTo(tx, ty);
-        ctx.strokeStyle = "rgba(232,62,140,0.85)";
+        ctx.strokeStyle = 'rgba(232,62,140,0.85)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
         // Hollow origin.
@@ -89,7 +91,7 @@ function drawDisc(
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.fillStyle = color;
   ctx.fill();
-  ctx.strokeStyle = "rgba(0,0,0,0.6)";
+  ctx.strokeStyle = 'rgba(0,0,0,0.6)';
   ctx.lineWidth = 1;
   ctx.stroke();
 }

@@ -30,12 +30,7 @@ export interface GridMesh {
   readonly lineIndices: Uint16Array;
 }
 
-export function createGridMesh(
-  cols: number,
-  rows: number,
-  width: number,
-  height: number,
-): GridMesh {
+export function createGridMesh(cols: number, rows: number, width: number, height: number): GridMesh {
   const nx = cols + 1;
   const ny = rows + 1;
   const vertexCount = nx * ny;
@@ -83,24 +78,28 @@ export function createGridMesh(
   for (let i = 0; i < ny; i++) {
     for (let j = 0; j < nx; j++) {
       const idx = i * nx + j;
-      if (j < nx - 1) lineList.push(idx, idx + 1);
-      if (i < ny - 1) lineList.push(idx, idx + nx);
+      if (j < nx - 1) {
+        lineList.push(idx, idx + 1);
+      }
+      if (i < ny - 1) {
+        lineList.push(idx, idx + nx);
+      }
     }
   }
   const lineIndices = new Uint16Array(lineList);
 
   return {
     cols,
-    rows,
-    width,
     height,
-    vertexCount,
+    lineIndices,
+    rows,
     srcX,
     srcY,
-    u,
-    v,
-    uv,
     triIndices,
-    lineIndices,
+    u,
+    uv,
+    v,
+    vertexCount,
+    width,
   };
 }

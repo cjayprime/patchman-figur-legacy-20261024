@@ -1,5 +1,5 @@
-import { buildControlPoints, type MlsControlPoints } from "./mls.ts";
-import { MAX_CONTROL_POINTS } from "./state.ts";
+import { buildControlPoints, type MlsControlPoints } from './mls.ts';
+import { MAX_CONTROL_POINTS } from './state.ts';
 
 export interface ControlPoint {
   id: number;
@@ -23,7 +23,9 @@ export class ControlPointStore {
   }
 
   get(id: number | null): ControlPoint | undefined {
-    if (id == null) return undefined;
+    if (id === null) {
+      return undefined;
+    }
     return this.points.find((p) => p.id === id);
   }
 
@@ -32,8 +34,10 @@ export class ControlPointStore {
   }
 
   add(x: number, y: number, anchor: boolean): ControlPoint | null {
-    if (this.atCapacity()) return null;
-    const p: ControlPoint = { id: this.nextId++, ox: x, oy: y, tx: x, ty: y, anchor };
+    if (this.atCapacity()) {
+      return null;
+    }
+    const p: ControlPoint = { anchor, id: this.nextId++, ox: x, oy: y, tx: x, ty: y };
     this.points.push(p);
     this.selectedId = p.id;
     return p;
@@ -41,8 +45,12 @@ export class ControlPointStore {
 
   remove(id: number): void {
     const i = this.points.findIndex((p) => p.id === id);
-    if (i >= 0) this.points.splice(i, 1);
-    if (this.selectedId === id) this.selectedId = null;
+    if (i >= 0) {
+      this.points.splice(i, 1);
+    }
+    if (this.selectedId === id) {
+      this.selectedId = null;
+    }
   }
 
   clear(): void {
@@ -53,7 +61,9 @@ export class ControlPointStore {
   /** Move a handle. Anchors move origin+target together (stay pinned). */
   moveHandle(id: number, x: number, y: number): void {
     const p = this.get(id);
-    if (!p) return;
+    if (!p) {
+      return;
+    }
     if (p.anchor) {
       p.ox = x;
       p.oy = y;

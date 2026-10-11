@@ -1,4 +1,4 @@
-import type { Compositor } from "./compositor.ts";
+import type { Compositor } from './compositor.ts';
 
 /**
  * Composite export (Milestone 3): render the clean plate + warped person layer
@@ -12,7 +12,7 @@ export async function exportComposite(
   personTexture: WebGLTexture | null,
   outW: number,
   outH: number,
-  fileName = "figur-edit.png",
+  fileName = 'figur-edit.png',
 ): Promise<void> {
   const colorTex = gl.createTexture()!;
   gl.bindTexture(gl.TEXTURE_2D, colorTex);
@@ -26,7 +26,7 @@ export async function exportComposite(
   const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
   if (status !== gl.FRAMEBUFFER_COMPLETE) {
     cleanup();
-    throw new Error("Export framebuffer incomplete: 0x" + status.toString(16));
+    throw new Error(`Export framebuffer incomplete: 0x${status.toString(16)}`);
   }
 
   gl.viewport(0, 0, outW, outH);
@@ -34,18 +34,20 @@ export async function exportComposite(
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // canvas uniform = out size so image-px positions [0..outW] fill clip space.
-  const u = { scale: 1, offsetX: 0, offsetY: 0, canvasW: outW, canvasH: outH };
+  const u = { canvasH: outH, canvasW: outW, offsetX: 0, offsetY: 0, scale: 1 };
   compositor.drawQuad(plateTexture, u);
-  if (personTexture) compositor.drawPerson(personTexture, u);
+  if (personTexture) {
+    compositor.drawPerson(personTexture, u);
+  }
 
   const pixels = new Uint8Array(outW * outH * 4);
   gl.readPixels(0, 0, outW, outH, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
   // readPixels is bottom-up; flip into a top-down ImageData.
-  const out = document.createElement("canvas");
+  const out = document.createElement('canvas');
   out.width = outW;
   out.height = outH;
-  const octx = out.getContext("2d")!;
+  const octx = out.getContext('2d')!;
   const img = octx.createImageData(outW, outH);
   const rowBytes = outW * 4;
   for (let y = 0; y < outH; y++) {
@@ -56,10 +58,12 @@ export async function exportComposite(
 
   cleanup();
 
-  const blob: Blob | null = await new Promise((res) => out.toBlob(res, "image/png"));
-  if (!blob) throw new Error("toBlob failed");
+  const blob: Blob | null = await new Promise((res) => out.toBlob(res, 'image/png'));
+  if (!blob) {
+    throw new Error('toBlob failed');
+  }
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
   document.body.appendChild(a);

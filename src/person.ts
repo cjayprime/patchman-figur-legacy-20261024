@@ -9,13 +9,7 @@
  */
 
 /** Bilinear upscale of a single-channel float map. */
-export function upscaleBilinear(
-  src: Float32Array,
-  sw: number,
-  sh: number,
-  dw: number,
-  dh: number,
-): Float32Array {
+export function upscaleBilinear(src: Float32Array, sw: number, sh: number, dw: number, dh: number): Float32Array {
   const out = new Float32Array(dw * dh);
   const sx = sw / dw;
   const sy = sh / dh;
@@ -33,21 +27,17 @@ export function upscaleBilinear(
       const b = src[y0 * sw + x1];
       const c = src[y1 * sw + x0];
       const d = src[y1 * sw + x1];
-      out[y * dw + x] =
-        a * (1 - tx) * (1 - ty) + b * tx * (1 - ty) + c * (1 - tx) * ty + d * tx * ty;
+      out[y * dw + x] = a * (1 - tx) * (1 - ty) + b * tx * (1 - ty) + c * (1 - tx) * ty + d * tx * ty;
     }
   }
   return out;
 }
 
 /** Separable gaussian blur of a single-channel float map (clamped edges). */
-export function gaussianBlur(
-  src: Float32Array,
-  w: number,
-  h: number,
-  sigma: number,
-): Float32Array {
-  if (sigma <= 0.05) return src.slice();
+export function gaussianBlur(src: Float32Array, w: number, h: number, sigma: number): Float32Array {
+  if (sigma <= 0.05) {
+    return src.slice();
+  }
   const radius = Math.max(1, Math.ceil(sigma * 3));
   const kernel = new Float32Array(radius * 2 + 1);
   let sum = 0;
@@ -56,7 +46,9 @@ export function gaussianBlur(
     kernel[i + radius] = v;
     sum += v;
   }
-  for (let i = 0; i < kernel.length; i++) kernel[i] /= sum;
+  for (let i = 0; i < kernel.length; i++) {
+    kernel[i] /= sum;
+  }
 
   const tmp = new Float32Array(w * h);
   // Horizontal.

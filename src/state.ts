@@ -18,7 +18,7 @@ export interface WarpOptions {
 /** Milestone-2 detection debug options (separate from the M1 warp options). */
 export interface DebugOptions {
   /** Segmentation model: single-class selfie or multiclass (union non-bg). */
-  segModel: "selfie" | "multiclass";
+  segModel: 'selfie' | 'multiclass';
   /** Tint the detected person red @ 40%. */
   showMatte: boolean;
   /** Draw the 33 pose landmarks + skeleton. */

@@ -1,5 +1,5 @@
-import type { GridMesh } from "./mesh.ts";
-import { createProgram } from "./glutil.ts";
+import type { GridMesh } from './mesh.ts';
+import { createProgram } from './glutil.ts';
 
 const VERT_SRC = `#version 300 es
 in vec2 a_position;   // deformed vertex, image-space px
@@ -68,15 +68,17 @@ export class MeshRenderer {
 
     const need = (name: string): WebGLUniformLocation => {
       const loc = gl.getUniformLocation(this.program, name);
-      if (!loc) throw new Error("Missing uniform " + name);
+      if (!loc) {
+        throw new Error(`Missing uniform ${name}`);
+      }
       return loc;
     };
-    this.uScale = need("u_scale");
-    this.uOffset = need("u_offset");
-    this.uCanvas = need("u_canvas");
-    this.uTex = need("u_tex");
-    this.uMode = need("u_mode");
-    this.uFlatColor = need("u_flatColor");
+    this.uScale = need('u_scale');
+    this.uOffset = need('u_offset');
+    this.uCanvas = need('u_canvas');
+    this.uTex = need('u_tex');
+    this.uMode = need('u_mode');
+    this.uFlatColor = need('u_flatColor');
 
     this.vao = gl.createVertexArray()!;
     this.uvBuffer = gl.createBuffer()!;
@@ -88,8 +90,8 @@ export class MeshRenderer {
   /** (Re)upload a mesh: static uv + indices, and allocate the dynamic pos buffer. */
   setMesh(mesh: GridMesh): void {
     const gl = this.gl;
-    const aPosition = gl.getAttribLocation(this.program, "a_position");
-    const aUv = gl.getAttribLocation(this.program, "a_uv");
+    const aPosition = gl.getAttribLocation(this.program, 'a_position');
+    const aUv = gl.getAttribLocation(this.program, 'a_uv');
 
     this.positions = new Float32Array(mesh.vertexCount * 2);
     this.triCount = mesh.triIndices.length;

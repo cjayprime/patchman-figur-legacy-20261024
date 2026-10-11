@@ -1,0 +1,8 @@
+.modal { box-sizing: border-box; width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 16px; border: 1px solid #839399; background: #f1f3f2; color: #183139; overflow: auto; }
+.modal::backdrop { background: rgb(0 0 0 / 45%); }
+.actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.frame { display: block; width: 100%; height: min(640px, calc(100dvh - 160px)); border: 0; margin-top: 12px; }
+.avatar { box-sizing: border-box; width: 32px; height: 32px; min-width: 32px; min-height: 32px; flex: 0 0 32px; padding: 0; overflow: hidden; border: 1px solid currentColor; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; background: transparent; color: inherit; }
+.avatar img { display: block; width: 32px; height: 32px; object-fit: cover; border-radius: 50%; }
+.help { box-sizing: border-box; width: 32px; height: 32px; min-width: 32px; min-height: 32px; flex: 0 0 32px; padding: 4px; border: 0; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.help:hover, .help:focus-visible { color: #aa3bff; }

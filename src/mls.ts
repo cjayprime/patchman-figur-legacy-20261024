@@ -89,8 +89,12 @@ export interface DeformOptions {
  * locality boundary.
  */
 function falloff(r: number): number {
-  if (r <= 0) return 1;
-  if (r >= 1) return 0;
+  if (r <= 0) {
+    return 1;
+  }
+  if (r >= 1) {
+    return 0;
+  }
   const t = 1 - r;
   return t * t * t * (t * (t * 6 - 15) + 10);
 }
@@ -156,7 +160,9 @@ export function deformPoints(
       const wi = Math.pow(d2, negAlpha);
       w[i] = wi;
       wsum += wi;
-      if (moving[i]) movingWsum += wi;
+      if (moving[i]) {
+        movingWsum += wi;
+      }
       pcx += wi * px[i];
       pcy += wi * py[i];
       qcx += wi * qx[i];
@@ -238,12 +244,7 @@ export function deformPoints(
 }
 
 /** Deform a single point (convenience; allocates a tiny result). */
-export function deformPoint(
-  cp: MlsControlPoints,
-  vx: number,
-  vy: number,
-  opts: DeformOptions = {},
-): [number, number] {
+export function deformPoint(cp: MlsControlPoints, vx: number, vy: number, opts: DeformOptions = {}): [number, number] {
   const ox = new Float32Array(1);
   const oy = new Float32Array(1);
   deformPoints(cp, [vx], [vy], ox, oy, 1, opts);
@@ -270,5 +271,5 @@ export function buildControlPoints(
     const dy = qy[i] - py[i];
     moving[i] = dx * dx + dy * dy > MOVING_EPS * MOVING_EPS ? 1 : 0;
   }
-  return { count, px, py, qx, qy, moving };
+  return { count, moving, px, py, qx, qy };
 }

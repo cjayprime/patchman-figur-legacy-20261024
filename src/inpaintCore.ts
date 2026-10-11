@@ -16,33 +16,57 @@ export const BLOCKED = 2;
 export function chamferDistance(seed: Uint8Array, w: number, h: number): Float32Array {
   const INF = 1e9;
   const d = new Float32Array(w * h);
-  for (let i = 0; i < d.length; i++) d[i] = seed[i] ? 0 : INF;
+  for (let i = 0; i < d.length; i++) {
+    d[i] = seed[i] ? 0 : INF;
+  }
   const A = 1;
   const B = Math.SQRT2;
   const relax = (i: number, j: number, cost: number) => {
     const v = d[j] + cost;
-    if (v < d[i]) d[i] = v;
+    if (v < d[i]) {
+      d[i] = v;
+    }
   };
   // Forward pass.
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = y * w + x;
-      if (d[i] === 0) continue;
-      if (x > 0) relax(i, i - 1, A);
-      if (y > 0) relax(i, i - w, A);
-      if (x > 0 && y > 0) relax(i, i - w - 1, B);
-      if (x < w - 1 && y > 0) relax(i, i - w + 1, B);
+      if (d[i] === 0) {
+        continue;
+      }
+      if (x > 0) {
+        relax(i, i - 1, A);
+      }
+      if (y > 0) {
+        relax(i, i - w, A);
+      }
+      if (x > 0 && y > 0) {
+        relax(i, i - w - 1, B);
+      }
+      if (x < w - 1 && y > 0) {
+        relax(i, i - w + 1, B);
+      }
     }
   }
   // Backward pass.
   for (let y = h - 1; y >= 0; y--) {
     for (let x = w - 1; x >= 0; x--) {
       const i = y * w + x;
-      if (d[i] === 0) continue;
-      if (x < w - 1) relax(i, i + 1, A);
-      if (y < h - 1) relax(i, i + w, A);
-      if (x < w - 1 && y < h - 1) relax(i, i + w + 1, B);
-      if (x > 0 && y < h - 1) relax(i, i + w - 1, B);
+      if (d[i] === 0) {
+        continue;
+      }
+      if (x < w - 1) {
+        relax(i, i + 1, A);
+      }
+      if (y < h - 1) {
+        relax(i, i + w, A);
+      }
+      if (x < w - 1 && y < h - 1) {
+        relax(i, i + w + 1, B);
+      }
+      if (x > 0 && y < h - 1) {
+        relax(i, i + w - 1, B);
+      }
     }
   }
   return d;
@@ -61,7 +85,9 @@ export function buildBandState(
 ): Uint8Array {
   const person = binary; // 1 = person
   const bg = new Uint8Array(w * h);
-  for (let i = 0; i < bg.length; i++) bg[i] = person[i] ? 0 : 1;
+  for (let i = 0; i < bg.length; i++) {
+    bg[i] = person[i] ? 0 : 1;
+  }
 
   const distToPerson = chamferDistance(person, w, h); // 0 on person, grows out
   const distToBg = chamferDistance(bg, w, h); // 0 on bg, grows into person
@@ -95,7 +121,7 @@ function buildLevel0(rgba: Uint8Array | Uint8ClampedArray, w: number, h: number,
     g[i] = rgba[i * 4 + 1];
     b[i] = rgba[i * 4 + 2];
   }
-  return { w, h, r, g, b, state };
+  return { b, g, h, r, state, w };
 }
 
 function downsample(prev: Level): Level {
@@ -108,8 +134,12 @@ function downsample(prev: Level): Level {
   const state = new Uint8Array(n);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      let sr = 0, sg = 0, sb = 0, cValid = 0;
-      let hasValid = false, hasFill = false;
+      let sr = 0,
+        sg = 0,
+        sb = 0,
+        cValid = 0;
+      let hasValid = false,
+        hasFill = false;
       for (let dy = 0; dy < 2; dy++) {
         for (let dx = 0; dx < 2; dx++) {
           const px = Math.min(prev.w - 1, x * 2 + dx);
@@ -118,7 +148,10 @@ function downsample(prev: Level): Level {
           const st = prev.state[j];
           if (st === VALID) {
             hasValid = true;
-            sr += prev.r[j]; sg += prev.g[j]; sb += prev.b[j]; cValid++;
+            sr += prev.r[j];
+            sg += prev.g[j];
+            sb += prev.b[j];
+            cValid++;
           } else if (st === FILL) {
             hasFill = true;
           }
@@ -133,7 +166,7 @@ function downsample(prev: Level): Level {
       }
     }
   }
-  return { w, h, r, g, b, state };
+  return { b, g, h, r, state, w };
 }
 
 /** Jacobi smoothing of FILL pixels from VALID/FILL 4-neighbours (skip BLOCKED). */
@@ -147,24 +180,60 @@ function jacobi(level: Level, fillIdx: Int32Array, iters: number): void {
       const i = fillIdx[k];
       const x = i % w;
       const y = (i / w) | 0;
-      let sr = 0, sg = 0, sb = 0, c = 0;
-      if (x > 0 && state[i - 1] !== BLOCKED) { sr += r[i - 1]; sg += g[i - 1]; sb += b[i - 1]; c++; }
-      if (x < w - 1 && state[i + 1] !== BLOCKED) { sr += r[i + 1]; sg += g[i + 1]; sb += b[i + 1]; c++; }
-      if (y > 0 && state[i - w] !== BLOCKED) { sr += r[i - w]; sg += g[i - w]; sb += b[i - w]; c++; }
-      if (y < h - 1 && state[i + w] !== BLOCKED) { sr += r[i + w]; sg += g[i + w]; sb += b[i + w]; c++; }
-      if (c > 0) { tr[k] = sr / c; tg[k] = sg / c; tb[k] = sb / c; }
-      else { tr[k] = r[i]; tg[k] = g[i]; tb[k] = b[i]; }
+      let sr = 0,
+        sg = 0,
+        sb = 0,
+        c = 0;
+      if (x > 0 && state[i - 1] !== BLOCKED) {
+        sr += r[i - 1];
+        sg += g[i - 1];
+        sb += b[i - 1];
+        c++;
+      }
+      if (x < w - 1 && state[i + 1] !== BLOCKED) {
+        sr += r[i + 1];
+        sg += g[i + 1];
+        sb += b[i + 1];
+        c++;
+      }
+      if (y > 0 && state[i - w] !== BLOCKED) {
+        sr += r[i - w];
+        sg += g[i - w];
+        sb += b[i - w];
+        c++;
+      }
+      if (y < h - 1 && state[i + w] !== BLOCKED) {
+        sr += r[i + w];
+        sg += g[i + w];
+        sb += b[i + w];
+        c++;
+      }
+      if (c > 0) {
+        tr[k] = sr / c;
+        tg[k] = sg / c;
+        tb[k] = sb / c;
+      } else {
+        tr[k] = r[i];
+        tg[k] = g[i];
+        tb[k] = b[i];
+      }
     }
     for (let k = 0; k < fillIdx.length; k++) {
       const i = fillIdx[k];
-      r[i] = tr[k]; g[i] = tg[k]; b[i] = tb[k];
+      r[i] = tr[k];
+      g[i] = tg[k];
+      b[i] = tb[k];
     }
   }
 }
 
 function fillIndices(level: Level): Int32Array {
   const idx: number[] = [];
-  for (let i = 0; i < level.state.length; i++) if (level.state[i] === FILL) idx.push(i);
+  for (let i = 0; i < level.state.length; i++) {
+    if (level.state[i] === FILL) {
+      idx.push(i);
+    }
+  }
   return Int32Array.from(idx);
 }
 
@@ -175,8 +244,10 @@ function bilinear(arr: Float32Array, w: number, h: number, fx: number, fy: numbe
   const y1 = Math.min(h - 1, y0 + 1);
   const tx = fx - x0;
   const ty = fy - y0;
-  const a = arr[y0 * w + x0], bb = arr[y0 * w + x1];
-  const c = arr[y1 * w + x0], dd = arr[y1 * w + x1];
+  const a = arr[y0 * w + x0],
+    bb = arr[y0 * w + x1];
+  const c = arr[y1 * w + x0],
+    dd = arr[y1 * w + x1];
   return a * (1 - tx) * (1 - ty) + bb * tx * (1 - ty) + c * (1 - tx) * ty + dd * tx * ty;
 }
 

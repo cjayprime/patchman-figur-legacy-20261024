@@ -1,0 +1,51 @@
+@media (min-width: 768px) and (max-width: 1024px) {
+  #app {
+    grid-template-areas:
+      "header"
+      "stage";
+    grid-template-columns: 1fr;
+    grid-template-rows: 54px 1fr;
+  }
+
+  #panel {
+    position: fixed;
+    z-index: 45;
+    top: 54px;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    min-width: 380px;
+    max-width: 92vw;
+    border-right: 1px solid var(--line);
+    transform: translateX(-102%);
+    transition: transform 0.22s var(--ease);
+  }
+
+  #panel.mobile-open {
+    transform: translateX(0);
+  }
+
+  .figur-menu-toggle {
+    display: inline-flex;
+  }
+
+  .figur-sidebar-backdrop {
+    position: fixed;
+    z-index: 44;
+    inset: 54px 0 0;
+    border: 0;
+    background: rgba(21, 16, 22, 0.45);
+  }
+
+  .figur-sidebar-backdrop.active {
+    display: block;
+  }
+
+  .header-center-pill {
+    min-width: 250px;
+  }
+
+  .pill-copy small {
+    display: none;
+  }
+}

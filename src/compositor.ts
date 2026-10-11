@@ -1,5 +1,5 @@
-import type { GridMesh } from "./mesh.ts";
-import { createProgram } from "./glutil.ts";
+import type { GridMesh } from './mesh.ts';
+import { createProgram } from './glutil.ts';
 
 /**
  * Layered compositor (Milestone 3). Renders:
@@ -74,17 +74,19 @@ export class Compositor {
     this.program = createProgram(gl, VERT_SRC, FRAG_SRC);
     const need = (n: string) => {
       const l = gl.getUniformLocation(this.program, n);
-      if (!l) throw new Error("Missing uniform " + n);
+      if (!l) {
+        throw new Error(`Missing uniform ${n}`);
+      }
       return l;
     };
-    this.uScale = need("u_scale");
-    this.uOffset = need("u_offset");
-    this.uCanvas = need("u_canvas");
-    this.uTex = need("u_tex");
-    this.uMode = need("u_mode");
-    this.uFlat = need("u_flatColor");
-    this.aPosition = gl.getAttribLocation(this.program, "a_position");
-    this.aUv = gl.getAttribLocation(this.program, "a_uv");
+    this.uScale = need('u_scale');
+    this.uOffset = need('u_offset');
+    this.uCanvas = need('u_canvas');
+    this.uTex = need('u_tex');
+    this.uMode = need('u_mode');
+    this.uFlat = need('u_flatColor');
+    this.aPosition = gl.getAttribLocation(this.program, 'a_position');
+    this.aUv = gl.getAttribLocation(this.program, 'a_uv');
 
     this.vaoQuad = gl.createVertexArray()!;
     this.vaoMesh = gl.createVertexArray()!;

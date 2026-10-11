@@ -1,6 +1,6 @@
-import type { Camera } from "./camera.ts";
-import type { ControlPointStore } from "./controlPoints.ts";
-import { CLICK_MOVE_THRESHOLD, HANDLE_HIT_RADIUS, type WarpOptions, type ViewOptions } from "./state.ts";
+import type { Camera } from './camera.ts';
+import type { ControlPointStore } from './controlPoints.ts';
+import { CLICK_MOVE_THRESHOLD, HANDLE_HIT_RADIUS, type WarpOptions, type ViewOptions } from './state.ts';
 
 export interface InteractionDeps {
   camera: Camera;
@@ -15,13 +15,13 @@ export interface InteractionDeps {
   onChange: () => void;
 }
 
-type Mode = "idle" | "maybeClick" | "pan" | "dragHandle" | "dragSplit";
+type Mode = 'idle' | 'maybeClick' | 'pan' | 'dragHandle' | 'dragSplit';
 
 /** Wire pointer / wheel / keyboard interaction onto `target` (the overlay). */
 export function setupInteraction(target: HTMLElement, deps: InteractionDeps): void {
   const { camera, store, options, imageSize } = deps;
 
-  let mode: Mode = "idle";
+  let mode: Mode = 'idle';
   let startX = 0;
   let startY = 0;
   let lastX = 0;
@@ -42,14 +42,20 @@ export function setupInteraction(target: HTMLElement, deps: InteractionDeps): vo
       const hx = p.anchor ? p.ox : p.tx;
       const hy = p.anchor ? p.oy : p.ty;
       const [px, py] = camera.toScreen(hx, hy);
-      if (Math.hypot(px - sx, py - sy) <= HANDLE_HIT_RADIUS) return p.id;
+      if (Math.hypot(px - sx, py - sy) <= HANDLE_HIT_RADIUS) {
+        return p.id;
+      }
     }
     return null;
   };
 
-  target.addEventListener("pointerdown", (e) => {
-    if (e.button !== 0) return;
-    if (!imageSize()) return;
+  target.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) {
+      return;
+    }
+    if (!imageSize()) {
+      return;
+    }
     const [sx, sy] = cssPos(e);
     startX = lastX = sx;
     startY = lastY = sy;
@@ -60,36 +66,38 @@ export function setupInteraction(target: HTMLElement, deps: InteractionDeps): vo
     const splitX = deps.view.split ? target.clientWidth * deps.view.splitRatio : -100;
 
     if (deps.view.split && Math.abs(sx - splitX) < 24) {
-      mode = "dragSplit";
-    } else if (hit != null) {
+      mode = 'dragSplit';
+    } else if (hit !== null) {
       store.selectedId = hit;
       dragId = hit;
-      mode = "dragHandle";
+      mode = 'dragHandle';
       deps.onChange();
       deps.markDirty();
     } else {
-      mode = "maybeClick";
+      mode = 'maybeClick';
     }
   });
 
-  target.addEventListener("pointermove", (e) => {
-    if (mode === "idle") return;
+  target.addEventListener('pointermove', (e) => {
+    if (mode === 'idle') {
+      return;
+    }
     const [sx, sy] = cssPos(e);
 
-    if (mode === "dragSplit") {
+    if (mode === 'dragSplit') {
       deps.view.splitRatio = Math.max(0, Math.min(1, sx / target.clientWidth));
       deps.markDirty();
-    } else if (mode === "dragHandle" && dragId != null) {
+    } else if (mode === 'dragHandle' && dragId !== null) {
       const [ix, iy] = camera.toImage(sx, sy);
       store.moveHandle(dragId, ix, iy);
       deps.markDirty();
       deps.onChange();
-    } else if (mode === "maybeClick") {
+    } else if (mode === 'maybeClick') {
       if (Math.hypot(sx - startX, sy - startY) > CLICK_MOVE_THRESHOLD) {
-        mode = "pan";
+        mode = 'pan';
       }
     }
-    if (mode === "pan") {
+    if (mode === 'pan') {
       camera.pan(sx - lastX, sy - lastY);
       deps.markDirty();
     }
@@ -98,7 +106,7 @@ export function setupInteraction(target: HTMLElement, deps: InteractionDeps): vo
   });
 
   const endPointer = (e: PointerEvent) => {
-    if (mode === "maybeClick") {
+    if (mode === 'maybeClick') {
       // A click on empty space places a control point (or an anchor with shift).
       const size = imageSize();
       const [ix, iy] = cssPos(e);
@@ -111,19 +119,21 @@ export function setupInteraction(target: HTMLElement, deps: InteractionDeps): vo
         }
       }
     }
-    mode = "idle";
+    mode = 'idle';
     dragId = null;
   };
-  target.addEventListener("pointerup", endPointer);
-  target.addEventListener("pointercancel", () => {
-    mode = "idle";
+  target.addEventListener('pointerup', endPointer);
+  target.addEventListener('pointercancel', () => {
+    mode = 'idle';
     dragId = null;
   });
 
   target.addEventListener(
-    "wheel",
+    'wheel',
     (e) => {
-      if (!imageSize()) return;
+      if (!imageSize()) {
+        return;
+      }
       e.preventDefault();
       const [sx, sy] = cssPos(e);
       const factor = Math.exp(-e.deltaY * 0.0015);
@@ -135,19 +145,21 @@ export function setupInteraction(target: HTMLElement, deps: InteractionDeps): vo
 
   const typingInField = (): boolean => {
     const el = document.activeElement;
-    return !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA");
+    return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
   };
 
-  window.addEventListener("keydown", (e) => {
-    if (typingInField()) return;
-    if (e.key === "Delete" || e.key === "Backspace") {
-      if (store.selectedId != null) {
+  window.addEventListener('keydown', (e) => {
+    if (typingInField()) {
+      return;
+    }
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (store.selectedId !== null) {
         e.preventDefault();
         store.remove(store.selectedId);
         deps.onChange();
         deps.markDirty();
       }
-    } else if (e.code === "Space") {
+    } else if (e.code === 'Space') {
       e.preventDefault();
       if (!options.showOriginal) {
         options.showOriginal = true;
@@ -156,8 +168,8 @@ export function setupInteraction(target: HTMLElement, deps: InteractionDeps): vo
     }
   });
 
-  window.addEventListener("keyup", (e) => {
-    if (e.code === "Space") {
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') {
       options.showOriginal = false;
       deps.markDirty();
     }

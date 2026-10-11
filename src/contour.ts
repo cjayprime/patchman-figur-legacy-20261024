@@ -58,24 +58,26 @@ export function deriveContour(
   lm: ReadonlyArray<Landmark>,
 ): ContourPoints | null {
   for (const i of [SH_L, SH_R, HIP_L, HIP_R]) {
-    if (!lm[i]) return null;
+    if (!lm[i]) {
+      return null;
+    }
   }
 
   const shoulderY = (lm[SH_L].y + lm[SH_R].y) / 2;
   const shoulderMidX = (lm[SH_L].x + lm[SH_R].x) / 2;
   const hipY = (lm[HIP_L].y + lm[HIP_R].y) / 2;
   const hipMidX = (lm[HIP_L].x + lm[HIP_R].x) / 2;
-  if (hipY <= shoulderY) return null; // upside-down / nonsense pose
+  if (hipY <= shoulderY) {
+    return null;
+  } // upside-down / nonsense pose
 
   // Knee line for the hip search span; approximate if knees aren't confident.
   const lk = lm[KNEE_L];
   const rk = lm[KNEE_R];
   const kneeVisible = (lk && lk.visibility > 0.3) || (rk && rk.visibility > 0.3);
-  const kneeY =
-    kneeVisible && lk && rk ? (lk.y + rk.y) / 2 : hipY + (hipY - shoulderY);
+  const kneeY = kneeVisible && lk && rk ? (lk.y + rk.y) / 2 : hipY + (hipY - shoulderY);
 
-  const isPerson = (x: number, y: number): boolean =>
-    x >= 0 && x < w && y >= 0 && y < h && binary[y * w + x] === 1;
+  const isPerson = (x: number, y: number): boolean => x >= 0 && x < w && y >= 0 && y < h && binary[y * w + x] === 1;
 
   // Torso centerline x at row y (interpolated shoulder-mid -> hip-mid).
   const centerX = (y: number): number => {
@@ -88,7 +90,9 @@ export function deriveContour(
   // find the torso edge across the arm/torso gap, not the arm.
   const edgesAtRow = (yf: number): RowEdges | null => {
     const y = Math.round(yf);
-    if (y < 0 || y >= h) return null;
+    if (y < 0 || y >= h) {
+      return null;
+    }
     let xi = Math.max(0, Math.min(w - 1, Math.round(centerX(y))));
     if (!isPerson(xi, y)) {
       let best = Infinity;
@@ -103,15 +107,21 @@ export function deriveContour(
           }
         }
       }
-      if (found < 0) return null;
+      if (found < 0) {
+        return null;
+      }
       xi = found;
     }
     const row = y * w;
     let l = xi;
-    while (l - 1 >= 0 && binary[row + (l - 1)] === 1) l--;
+    while (l - 1 >= 0 && binary[row + (l - 1)] === 1) {
+      l--;
+    }
     let r = xi;
-    while (r + 1 < w && binary[row + (r + 1)] === 1) r++;
-    return { l, r, y, width: r - l };
+    while (r + 1 < w && binary[row + (r + 1)] === 1) {
+      r++;
+    }
+    return { l, r, width: r - l, y };
   };
 
   // BUST: 25% of the way from shoulder line down to hip line.
@@ -148,19 +158,21 @@ export function deriveContour(
     }
   }
 
-  if (!bustE || !waistE || !hipE) return null;
+  if (!bustE || !waistE || !hipE) {
+    return null;
+  }
 
   return {
     bustL: { x: bustE.l, y: bustE.y },
     bustR: { x: bustE.r, y: bustE.y },
-    waistL: { x: waistE.l, y: waistE.y },
-    waistR: { x: waistE.r, y: waistE.y },
+    bustY: bustE.y,
     hipL: { x: hipE.l, y: hipE.y },
     hipR: { x: hipE.r, y: hipE.y },
-    shoulderY,
     hipY,
+    shoulderY,
+    waistL: { x: waistE.l, y: waistE.y },
+    waistR: { x: waistE.r, y: waistE.y },
     waistY: waistE.y,
-    bustY: bustE.y,
   };
 }
 
@@ -170,13 +182,13 @@ export function scaleContour(c: ContourPoints, s: number): ContourPoints {
   return {
     bustL: p(c.bustL),
     bustR: p(c.bustR),
-    waistL: p(c.waistL),
-    waistR: p(c.waistR),
+    bustY: c.bustY * s,
     hipL: p(c.hipL),
     hipR: p(c.hipR),
-    shoulderY: c.shoulderY * s,
     hipY: c.hipY * s,
+    shoulderY: c.shoulderY * s,
+    waistL: p(c.waistL),
+    waistR: p(c.waistR),
     waistY: c.waistY * s,
-    bustY: c.bustY * s,
   };
 }

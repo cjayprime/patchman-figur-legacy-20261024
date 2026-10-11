@@ -12,8 +12,8 @@
  * Builds only on detector OUTPUTS (contour, landmarks, matte) — it does not
  * touch the M1 warp/localize engine or the M2 detector internals.
  */
-import type { DetectionResult } from "./detector.ts";
-import type { SliderState } from "./state.ts";
+import type { DetectionResult } from './detector.ts';
+import type { SliderState } from './state.ts';
 
 export interface BodyPair {
   ox: number;
@@ -29,18 +29,24 @@ export interface BodyEdit {
 }
 
 // MediaPipe pose indices.
-const L_SH = 11, R_SH = 12, L_HIP = 23, R_HIP = 24, L_KNEE = 25, R_KNEE = 26, L_ANK = 27, R_ANK = 28;
+const L_SH = 11,
+  R_SH = 12,
+  L_HIP = 23,
+  R_HIP = 24,
+  L_KNEE = 25,
+  R_KNEE = 26,
+  L_ANK = 27,
+  R_ANK = 28;
 
 const easeOut = (v: number, ceil: number): number => Math.pow(clamp(v, 0, ceil) / 100, 0.8);
 const clamp = (v: number, a: number, b: number): number => (v < a ? a : v > b ? b : v);
 
-export function buildBodyEdit(
-  det: DetectionResult,
-  sliders: SliderState,
-): BodyEdit | null {
+export function buildBodyEdit(det: DetectionResult, sliders: SliderState): BodyEdit | null {
   const c = det.contour;
   const lm = det.landmarks;
-  if (!c || !lm) return null;
+  if (!c || !lm) {
+    return null;
+  }
 
   const shoulderMidX = (lm[L_SH].x + lm[R_SH].x) / 2;
   const hipMidX = (lm[L_HIP].x + lm[R_HIP].x) / 2;
@@ -61,7 +67,7 @@ export function buildBodyEdit(
 
   const dWaist = easeOut(waistVal, sliders.ceiling) * 0.07 * waistWidth;
   const dHip = easeOut(hipVal, sliders.ceiling) * 0.08 * hipWidth;
-  
+
   const dBust = easeOut(bustVal, sliders.ceiling) * 0.06 * bustWidth;
   const dOuterX = dBust * 0.6;
   const dOuterY = dBust * 0.4;
@@ -70,7 +76,7 @@ export function buildBodyEdit(
   const waistCenter = centerXAt(c.waistY);
   const hipCenter = centerXAt(hipY);
   const bustCenterY = c.bustY;
-  
+
   const underbustY = bustCenterY + 0.35 * (c.waistY - bustCenterY);
 
   const pairs: BodyPair[] = [];
@@ -79,11 +85,11 @@ export function buildBodyEdit(
   // Waist: each edge toward the centerline (slim).
   pairs.push(move(c.waistL, c.waistL.x + Math.sign(waistCenter - c.waistL.x) * dWaist, c.waistL.y));
   pairs.push(move(c.waistR, c.waistR.x + Math.sign(waistCenter - c.waistR.x) * dWaist, c.waistR.y));
-  
+
   // Hips: each edge outward (widen).
   pairs.push(move(c.hipL, c.hipL.x + Math.sign(c.hipL.x - hipCenter) * dHip, c.hipL.y));
   pairs.push(move(c.hipR, c.hipR.x + Math.sign(c.hipR.x - hipCenter) * dHip, c.hipR.y));
-  
+
   // Bust: shallow downward-outward arc + lift
   pairs.push(move(c.bustL, c.bustL.x - dOuterX, c.bustL.y + dOuterY - lift));
   pairs.push(move(c.bustR, c.bustR.x + dOuterX, c.bustR.y + dOuterY - lift));
@@ -93,7 +99,7 @@ export function buildBodyEdit(
   pin(pairs, lm[R_SH].x, lm[R_SH].y);
   pin(pairs, shoulderMidX, shoulderY); // Collarbone centerline
   pin(pairs, centerXAt(underbustY), underbustY); // Underbust centerline pin
-  
+
   pin(pairs, waistCenter, c.waistY);
   pin(pairs, hipMidX, hipY);
 
@@ -113,7 +119,10 @@ export function buildBodyEdit(
   }
 
   // Radius from the body bbox of ALL pairs (origins + targets).
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
   for (const p of pairs) {
     minX = Math.min(minX, p.ox, p.tx);
     maxX = Math.max(maxX, p.ox, p.tx);
@@ -137,15 +146,22 @@ function pin(list: BodyPair[], x: number, y: number): void {
 function silhouetteExtent(det: DetectionResult, imageY: number): { l: number; r: number } | null {
   const m = det.matte;
   const yDet = Math.round(imageY / m.scaleToImage);
-  if (yDet < 0 || yDet >= m.height) return null;
+  if (yDet < 0 || yDet >= m.height) {
+    return null;
+  }
   const row = yDet * m.width;
-  let l = -1, r = -1;
+  let l = -1,
+    r = -1;
   for (let x = 0; x < m.width; x++) {
     if (m.binary[row + x] === 1) {
-      if (l < 0) l = x;
+      if (l < 0) {
+        l = x;
+      }
       r = x;
     }
   }
-  if (l < 0) return null;
+  if (l < 0) {
+    return null;
+  }
   return { l: l * m.scaleToImage, r: r * m.scaleToImage };
 }

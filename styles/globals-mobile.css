@@ -1,0 +1,102 @@
+@media (max-width: 767px) {
+  #app {
+    grid-template-areas:
+      "header"
+      "stage";
+    grid-template-columns: 1fr;
+    grid-template-rows: 52px 1fr;
+  }
+
+  #topbar {
+    min-height: 52px;
+    padding: 0 12px;
+  }
+
+  #panel {
+    position: fixed;
+    z-index: 45;
+    top: 52px;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    min-width: 380px;
+    max-width: 92vw;
+    max-height: none;
+    border: 0;
+    border-right: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: 12px 0 30px rgba(21, 16, 22, 0.14);
+    transform: translateX(-102%);
+    transition: transform 0.22s var(--ease);
+  }
+
+  body:not(.has-photo) #panel {
+    display: flex;
+  }
+
+  #panel.mobile-open {
+    transform: translateX(0);
+  }
+
+  #panel::before {
+    content: none;
+  }
+
+  .figur-menu-toggle {
+    display: inline-flex;
+  }
+
+  .figur-sidebar-backdrop {
+    position: fixed;
+    z-index: 44;
+    inset: 52px 0 0;
+    border: 0;
+    background: rgba(21, 16, 22, 0.45);
+  }
+
+  .figur-sidebar-backdrop.active {
+    display: block;
+  }
+
+  .header-center-pill {
+    display: none;
+  }
+
+  .lockup {
+    gap: 7px;
+  }
+
+  .shared-actions {
+    gap: 6px;
+  }
+
+  .shared-projects {
+    width: 32px;
+    min-height: 32px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .shared-projects span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .studio-nav-tabs {
+    gap: 2px;
+    padding-inline: 3px;
+  }
+
+  .studio-tab-btn {
+    padding-inline: 1px;
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+
+  body [aria-label="Development sign-in"] {
+    bottom: 80px !important;
+  }
+}

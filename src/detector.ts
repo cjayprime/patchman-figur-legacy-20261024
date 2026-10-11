@@ -8,22 +8,17 @@
  * `initDetector()`, which is kicked off at page load. After that, detection
  * runs entirely from in-memory models — zero network requests.
  */
-import {
-  FilesetResolver,
-  ImageSegmenter,
-  PoseLandmarker,
-  type NormalizedLandmark,
-} from "@mediapipe/tasks-vision";
-import { deriveContour, scaleContour, type ContourPoints, type Landmark } from "./contour.ts";
+import { FilesetResolver, ImageSegmenter, PoseLandmarker, type NormalizedLandmark } from '@mediapipe/tasks-vision';
+import { deriveContour, scaleContour, type ContourPoints, type Landmark } from './contour.ts';
 
-export type SegModel = "selfie" | "multiclass";
+export type SegModel = 'selfie' | 'multiclass';
 
-const BASE = import.meta.env.BASE_URL; // "/" in dev; whatever base in build
-const WASM_PATH = BASE + "wasm";
+const BASE = '/';
+const WASM_PATH = `${BASE}wasm`;
 const MODELS = {
-  selfie: BASE + "models/selfie_segmenter.tflite",
-  multiclass: BASE + "models/selfie_multiclass_256x256.tflite",
-  pose: BASE + "models/pose_landmarker_lite.task",
+  multiclass: `${BASE}models/selfie_multiclass_256x256.tflite`,
+  pose: `${BASE}models/pose_landmarker_lite.task`,
+  selfie: `${BASE}models/selfie_segmenter.tflite`,
 };
 
 /** Cap the detection input so mask memory / upsampling stays bounded. */
@@ -76,24 +71,24 @@ export function initDetector(): Promise<void> {
       const [selfie, multiclass, poseLm] = await Promise.all([
         ImageSegmenter.createFromOptions(vision, {
           baseOptions: { modelAssetPath: MODELS.selfie },
-          runningMode: "IMAGE",
           outputCategoryMask: true,
           outputConfidenceMasks: true,
+          runningMode: 'IMAGE',
         }),
         ImageSegmenter.createFromOptions(vision, {
           baseOptions: { modelAssetPath: MODELS.multiclass },
-          runningMode: "IMAGE",
           outputCategoryMask: true,
           outputConfidenceMasks: true,
+          runningMode: 'IMAGE',
         }),
         PoseLandmarker.createFromOptions(vision, {
           baseOptions: { modelAssetPath: MODELS.pose },
-          runningMode: "IMAGE",
           numPoses: 1,
+          runningMode: 'IMAGE',
         }),
       ]);
-      segmenters.set("selfie", selfie);
-      segmenters.set("multiclass", multiclass);
+      segmenters.set('selfie', selfie);
+      segmenters.set('multiclass', multiclass);
       pose = poseLm;
     })();
   }
@@ -109,7 +104,9 @@ export async function runDetection(
 ): Promise<DetectionResult> {
   await initDetector();
   const segmenter = segmenters.get(model);
-  if (!segmenter || !pose) throw new Error("Detector not initialized");
+  if (!segmenter || !pose) {
+    throw new Error('Detector not initialized');
+  }
 
   const t0 = performance.now();
 
@@ -118,10 +115,10 @@ export async function runDetection(
   const s = long > DETECT_MAX_SIDE ? DETECT_MAX_SIDE / long : 1;
   const detW = Math.max(1, Math.round(imageW * s));
   const detH = Math.max(1, Math.round(imageH * s));
-  const det = document.createElement("canvas");
+  const det = document.createElement('canvas');
   det.width = detW;
   det.height = detH;
-  det.getContext("2d")!.drawImage(source, 0, 0, detW, detH);
+  det.getContext('2d')!.drawImage(source, 0, 0, detW, detH);
   const scaleToImage = imageW / detW;
 
   // --- segmentation ---
@@ -139,10 +136,10 @@ export async function runDetection(
   const rawLandmarks: NormalizedLandmark[] | undefined = poseRes.landmarks?.[0];
   const landmarks: LandmarkPx[] | null = rawLandmarks
     ? rawLandmarks.map((l) => ({
+        visibility: l.visibility ?? 0,
         x: l.x * imageW,
         y: l.y * imageH,
         z: l.z,
-        visibility: l.visibility ?? 0,
       }))
     : null;
 
@@ -150,22 +147,24 @@ export async function runDetection(
   let contour: ContourPoints | null = null;
   if (rawLandmarks) {
     const lmDet: Landmark[] = rawLandmarks.map((l) => ({
+      visibility: l.visibility ?? 0,
       x: l.x * detW,
       y: l.y * detH,
-      visibility: l.visibility ?? 0,
     }));
     const inDet = deriveContour(matte.binary, detW, detH, lmDet);
-    if (inDet) contour = scaleContour(inDet, scaleToImage);
+    if (inDet) {
+      contour = scaleContour(inDet, scaleToImage);
+    }
   }
 
   return {
-    imageW,
-    imageH,
-    model,
-    matte,
-    landmarks,
     contour,
-    timings: { segMs, poseMs, totalMs: performance.now() - t0 },
+    imageH,
+    imageW,
+    landmarks,
+    matte,
+    model,
+    timings: { poseMs, segMs, totalMs: performance.now() - t0 },
   };
 }
 
@@ -179,18 +178,12 @@ interface SegmentLike {
  *  - selfie (single class): confidence mask = foreground probability.
  *  - multiclass: person = any non-background category (union); soft = 1 - bg.
  */
-function buildMatte(
-  segRes: SegmentLike,
-  model: SegModel,
-  w: number,
-  h: number,
-  scaleToImage: number,
-): Matte {
+function buildMatte(segRes: SegmentLike, model: SegModel, w: number, h: number, scaleToImage: number): Matte {
   const n = w * h;
   const binary = new Uint8Array(n);
   const soft = new Float32Array(n);
 
-  if (model === "multiclass") {
+  if (model === 'multiclass') {
     const cat = segRes.categoryMask?.getAsUint8Array();
     const conf = segRes.confidenceMasks;
     const bg = conf && conf.length > 0 ? conf[0].getAsFloat32Array() : null;
@@ -211,10 +204,10 @@ function buildMatte(
   }
 
   // Tint canvas: red @ 40% where person.
-  const tint = document.createElement("canvas");
+  const tint = document.createElement('canvas');
   tint.width = w;
   tint.height = h;
-  const tctx = tint.getContext("2d")!;
+  const tctx = tint.getContext('2d')!;
   const img = tctx.createImageData(w, h);
   const data = img.data;
   let count = 0;
@@ -230,7 +223,7 @@ function buildMatte(
   }
   tctx.putImageData(img, 0, 0);
 
-  return { width: w, height: h, binary, soft, scaleToImage, tint, coverage: count / n };
+  return { binary, coverage: count / n, height: h, scaleToImage, soft, tint, width: w };
 }
 
 /** Skeleton edges (index pairs) for drawing the pose. */

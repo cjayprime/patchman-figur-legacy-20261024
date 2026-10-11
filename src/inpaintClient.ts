@@ -17,7 +17,7 @@ export interface InpaintResult {
 }
 
 export function createInpaintWorker(): Worker {
-  return new Worker(new URL("./inpaintWorker.ts", import.meta.url), { type: "module" });
+  return new Worker(new URL('./inpaintWorker.ts', import.meta.url), { type: 'module' });
 }
 
 let nextId = 1;
@@ -26,16 +26,26 @@ export function inpaint(worker: Worker, params: InpaintParams): Promise<InpaintR
   const id = nextId++;
   return new Promise((resolve) => {
     const onMsg = (e: MessageEvent) => {
-      if (e.data?.id !== id) return;
-      worker.removeEventListener("message", onMsg);
-      resolve({ rgba: new Uint8Array(e.data.rgba), w: e.data.w, h: e.data.h, ms: e.data.ms });
+      if (e.data?.id !== id) {
+        return;
+      }
+      worker.removeEventListener('message', onMsg);
+      resolve({ h: e.data.h, ms: e.data.ms, rgba: new Uint8Array(e.data.rgba), w: e.data.w });
     };
-    worker.addEventListener("message", onMsg);
+    worker.addEventListener('message', onMsg);
     // Copy buffers before transferring (callers keep their originals).
     const rgbaBuf = params.rgba.slice().buffer;
     const binBuf = params.binary.slice().buffer;
     worker.postMessage(
-      { id, rgba: rgbaBuf, binary: binBuf, w: params.w, h: params.h, dilatePx: params.dilatePx, erodePx: params.erodePx },
+      {
+        binary: binBuf,
+        dilatePx: params.dilatePx,
+        erodePx: params.erodePx,
+        h: params.h,
+        id,
+        rgba: rgbaBuf,
+        w: params.w,
+      },
       [rgbaBuf, binBuf],
     );
   });
