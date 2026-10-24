@@ -22,7 +22,7 @@ const pending = new WeakMap<NextApiRequest, Promise<AccountAccess>>();
 async function verify(req: NextApiRequest): Promise<AccountAccess> {
   const token = accountSessionToken(req);
   if (!token || !/^[a-f0-9]{64}$/.test(token)) {
-    throw new ApiError(401, 'Sign in through Patchman Account.');
+    throw new ApiError(401, 'Click the profile icon at the top right to sign in, then try again.');
   }
   const base = new URL(accountOrigin());
   if (base.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)) {
@@ -42,7 +42,7 @@ async function verify(req: NextApiRequest): Promise<AccountAccess> {
     throw new ApiError(503, 'Account service is unavailable. Try again shortly.');
   }
   if (response.status === 401) {
-    throw new ApiError(401, 'Sign in through Patchman Account.');
+    throw new ApiError(401, 'Click the profile icon at the top right to sign in, then try again.');
   }
   if (response.status === 403) {
     throw new ApiError(403, 'Complete your profile in Patchman Account.');

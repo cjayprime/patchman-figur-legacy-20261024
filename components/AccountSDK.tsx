@@ -1,3 +1,4 @@
+import ErrorNotice from './ErrorNotice';
 import { useCallback, useState } from 'react';
 import Script from 'next/script';
 import { parseAccountOrigin } from '../lib/account/url';
@@ -20,12 +21,11 @@ export default function AccountSDK() {
         />
       )}
       {(!base || failed) && (
-        <p role="alert" data-patchman-sdk-error>
-          Patchman Account could not load. Please reload this page or contact support.{' '}
-          <button type="button" onClick={onReload}>
-            RELOAD
-          </button>
-        </p>
+        <ErrorNotice
+          message="Patchman Account could not load. Please reload this page or contact support."
+          onRetry={onReload}
+          retryLabel="RELOAD"
+        />
       )}
     </>
   );

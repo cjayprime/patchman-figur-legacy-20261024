@@ -1,4 +1,5 @@
 import CreditBalance from '../components/CreditBalance';
+import ErrorNotice from '../components/ErrorNotice';
 import AdsButton from '../components/AdsButton';
 import Head from 'next/head';
 import { useFigurWorkspace } from '../lib/useFigurWorkspace';
@@ -45,15 +46,12 @@ export default function FigurPage() {
                   : 'CHOOSE A PROJECT'}
         </div>
         {state.error && (
-          <div className="project-save-error" role="alert">
-            <p>{state.error}</p>
-            <button type="button" onClick={projectStore.retry}>
-              RETRY SAVE
-            </button>
-            <button type="button" onClick={projectStore.clearError} aria-label="Dismiss project error">
-              CLOSE
-            </button>
-          </div>
+          <ErrorNotice
+            message={state.error}
+            onDismiss={projectStore.clearError}
+            onRetry={state.errorAction === 'save' ? projectStore.retry : undefined}
+            retryLabel="Retry save"
+          />
         )}
 
         <FigurSidebar />

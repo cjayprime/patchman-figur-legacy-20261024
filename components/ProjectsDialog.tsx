@@ -115,7 +115,6 @@ export function ProjectsDialog({ open, onClose }: { open: boolean; onClose: () =
             maxLength={255}
             autoFocus
           />
-          {state.error && <p role="alert">{state.error}</p>}
           <div className="project-dialog-actions">
             <button className="project-secondary" type="button" onClick={onListMode}>
               BACK TO PROJECTS
@@ -138,9 +137,10 @@ export function ProjectsDialog({ open, onClose }: { open: boolean; onClose: () =
             NEW PROJECT
           </button>
           {state.isLoading && <p role="status">Loading projects…</p>}
-          {state.error && <p role="alert">{state.error}</p>}
           <div className="project-list">
-            {projects.length ? projects : <p className="project-empty">No projects yet. Create your first look.</p>}
+            {projects.length
+              ? projects
+              : !state.error && <p className="project-empty">No projects yet. Create your first look.</p>}
           </div>
           {state.nextCursor && (
             <button

@@ -21,10 +21,12 @@ interface ProjectState {
   isSaving: boolean;
   dirty: boolean;
   error: string | null;
+  errorAction: 'load' | 'create' | 'open' | 'save' | null;
 }
 const INITIAL: ProjectState = {
   dirty: false,
   error: null,
+  errorAction: null,
   isLoading: false,
   isLoadingMore: false,
   isSaving: false,
@@ -40,6 +42,9 @@ async function request<T>(path: string, method = 'GET', input?: unknown): Promis
     method,
     ...(input === undefined ? {} : { body: JSON.stringify(input), headers: { 'Content-Type': 'application/json' } }),
   });
+  if (response.status === 401) {
+    throw new Error('Click the profile icon at the top right to sign in, then try again.');
+  }
   let body: { data: T; message?: string; status: boolean };
   try {
     body = await response.json();
@@ -70,8 +75,9 @@ class ProjectStore {
     this.state = { ...this.state, ...patch };
     this.listeners.forEach((listener) => listener());
   }
-  readonly fail = (message: string) => this.set({ error: message });
-  readonly clearError = () => this.set({ error: null });
+  readonly fail = (message: string, errorAction: ProjectState['errorAction'] = null) =>
+    this.set({ error: message, errorAction });
+  readonly clearError = () => this.set({ error: null, errorAction: null });
   readonly load = async (more = false) => {
     if (this.state.isLoading || this.state.isLoadingMore || (more && !this.state.nextCursor)) {
       return;
@@ -91,7 +97,7 @@ class ProjectStore {
           : data.projects,
       });
     } catch (error) {
-      this.fail(error instanceof Error ? error.message : 'Projects could not be loaded.');
+      this.fail(error instanceof Error ? error.message : 'Projects could not be loaded.', 'load');
     } finally {
       this.set({ isLoading: false, isLoadingMore: false });
     }
@@ -106,7 +112,7 @@ class ProjectStore {
       const data = await request<{ project: EditorProject }>('/api/projects', 'POST', { name });
       return data.project;
     } catch (error) {
-      this.fail(error instanceof Error ? error.message : 'Project could not be created.');
+      this.fail(error instanceof Error ? error.message : 'Project could not be created.', 'create');
       return null;
     } finally {
       this.set({ isSubmitting: false });
@@ -139,7 +145,7 @@ class ProjectStore {
       return data.project;
     } catch (error) {
       if (token === this.opening) {
-        this.fail(error instanceof Error ? error.message : 'Project could not be opened.');
+        this.fail(error instanceof Error ? error.message : 'Project could not be opened.', 'open');
       }
       return null;
     } finally {
@@ -214,6 +220,7 @@ class ProjectStore {
           error instanceof Error
             ? error.message
             : 'Your edits could not be saved. Keep this window open and try again.',
+          'save',
         );
         return false;
       } finally {
