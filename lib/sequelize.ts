@@ -1,6 +1,7 @@
 import { databaseInstance, databasePool } from './database/pool.cjs';
 import { databaseTls } from './database/tls.cjs';
 import { Sequelize } from 'sequelize';
+import mysql2 from 'mysql2';
 
 export const sequelize = databaseInstance(
   'figur',
@@ -8,6 +9,7 @@ export const sequelize = databaseInstance(
     new Sequelize({
       database: process.env.DATABASE_NAME || 'patchman_figur_v3',
       dialect: 'mysql',
+      dialectModule: mysql2,
       dialectOptions: { bigNumberStrings: true, supportBigNumbers: true, ...databaseTls() },
       host: process.env.DATABASE_HOST || '127.0.0.1',
       logging: false,
