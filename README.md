@@ -29,8 +29,8 @@ production seed data are installed. Incompatible tables stop startup. Normal
 startup does not reset or convert old records.
 
 The npm scripts select port 3602 with `-p`; environment variables do not select
-the listening port. `DATABASE_MAX_CONNECTIONS` is an app-wide budget (default 7,
-launch value 6); `DATABASE_WORKER_COUNT=0` reserves the full web allocation.
+the listening port. The source-owned database policy gives the single web
+process 6 connections, with no direct database workers.
 Maintenance commands use one connection and always close their pool.
 
 ## Project interfaces

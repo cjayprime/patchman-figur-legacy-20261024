@@ -19,7 +19,7 @@ let created = false,
 try {
   await maintenance.createTestDatabase(operator, name);
   created = true;
-  Object.assign(process.env, { DATABASE_NAME: name, DATABASE_MAX_CONNECTIONS: '3', DATABASE_WORKER_COUNT: '0' });
+  Object.assign(process.env, { DATABASE_NAME: name });
   const { sequelize } = await import('../../lib/sequelize.ts');
   database = sequelize;
   const migration = require('../../migrations/20261008000000-create-figur.cjs');

@@ -9,9 +9,6 @@ function testEnvironment(environment = process.env) {
     ...environment,
     DATABASE_HOST: environment.DATABASE_HOST ?? 'localhost',
     DATABASE_PORT: environment.DATABASE_PORT ?? '3306',
-    DATABASE_TLS_MODE: environment.DATABASE_TLS_MODE || 'disabled',
-    DATABASE_TLS_CA: environment.DATABASE_TLS_CA || '',
-    DATABASE_TLS_CA_FILE: environment.DATABASE_TLS_CA_FILE || '',
   };
   for (const key of ['DATABASE_HOST', 'DATABASE_PORT', 'DATABASE_USER', 'DATABASE_PASSWORD']) {
     if (typeof selected[key] !== 'string' || (key !== 'DATABASE_PASSWORD' && !selected[key])) {
@@ -46,15 +43,7 @@ function testDatabaseConfiguration(configuration = {}, environment = process.env
     DATABASE_PASSWORD: environment.DATABASE_PASSWORD ?? configuration.password,
   });
   // Only the disposable test process and its explicitly spawned fixture children inherit these settings.
-  for (const key of [
-    'DATABASE_HOST',
-    'DATABASE_PORT',
-    'DATABASE_USER',
-    'DATABASE_PASSWORD',
-    'DATABASE_TLS_MODE',
-    'DATABASE_TLS_CA',
-    'DATABASE_TLS_CA_FILE',
-  ]) {
+  for (const key of ['DATABASE_HOST', 'DATABASE_PORT', 'DATABASE_USER', 'DATABASE_PASSWORD']) {
     process.env[key] = selected[key];
   }
   return {

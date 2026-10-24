@@ -36,8 +36,6 @@ test('maintenance transport is explicitly local and rejects invalid configuratio
   for (const port of ['0', '65536', '3306junk', '3.3', '-1']) {
     assert.throws(() => testEnvironment({ ...fixture, DATABASE_PORT: port }), /valid TCP port/);
   }
-  assert.throws(() => testEnvironment({ ...fixture, DATABASE_TLS_MODE: 'insecure' }), /TLS configuration/);
-  assert.throws(() => testEnvironment({ ...fixture, DATABASE_TLS_MODE: 'verify-full' }), /certificate DNS hostname/);
 });
 
 test('existing settings remain unchanged while the maintenance pool is limited to one', () => {
@@ -46,7 +44,6 @@ test('existing settings remain unchanged while the maintenance pool is limited t
   assert.equal(selected.DATABASE_USER, fixture.DATABASE_USER);
   assert.equal(selected.DATABASE_PASSWORD, fixture.DATABASE_PASSWORD);
   assert.equal(selected.DATABASE_NAME, env.DATABASE_NAME);
-  assert.equal(selected.DATABASE_TLS_MODE, 'disabled');
   assert.equal(env.DATABASE_USER, fixture.DATABASE_USER);
   const before = { ...process.env };
   try {

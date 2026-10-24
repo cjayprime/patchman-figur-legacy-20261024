@@ -1,12 +1,7 @@
-const SYSTEM_SCHEMAS = new Set(['mysql', 'information_schema', 'performance_schema', 'sys', 'ndbinfo']);
+import { databaseName } from '../lib/database/name.cjs';
 
 export function freshDatabaseName(name) {
-  if (typeof name !== 'string' || !/^[a-z][a-z0-9_]{1,63}$/.test(name) || SYSTEM_SCHEMAS.has(name)) {
-    throw new Error(
-      'Set an explicit, valid application database name outside MySQL system schemas before provisioning.',
-    );
-  }
-  return name;
+  return databaseName(name);
 }
 
 export async function createFreshDatabase(configuration, name, SequelizeConstructor) {

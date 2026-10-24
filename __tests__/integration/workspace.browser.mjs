@@ -65,8 +65,6 @@ async function environment(app) {
     ...settings,
     NODE_ENV: 'production',
     DATABASE_NAME: name,
-    DATABASE_MAX_CONNECTIONS: '3',
-    DATABASE_WORKER_COUNT: '0',
     NEXT_PUBLIC_ACCOUNT_URL: accountUrl,
     ACCOUNT_COOKIE_DOMAIN: '',
     ACCOUNT_SESSION_COOKIE_NAME: cookieName,
@@ -177,7 +175,8 @@ try {
       stranger = await signup(strangerContext, 'stranger');
     await strangerContext.close();
     await server('Figur', figurPort, figurEnv, async () => {
-      Object.assign(process.env, figurEnv, { DATABASE_PROCESS_ROLE: 'maintenance' });
+      Object.assign(process.env, figurEnv);
+      require('../../lib/database/pool.cjs').configureDatabaseProcess({ role: 'maintenance' });
       const connection = await import('../../lib/sequelize.ts');
       database = connection.sequelize;
       await database.query('ALTER TABLE figur_projects AUTO_INCREMENT = 9007199254740993');

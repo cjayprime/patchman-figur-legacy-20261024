@@ -18,10 +18,11 @@
     "migrate": "sequelize-cli db:migrate --config lib/database/config.cjs --migrations-path migrations",
     "seed": "sequelize-cli db:seed:all --config lib/database/config.cjs --seeders-path seeders",
     "preinstall": "node scripts/check-node.cjs",
-    "prebuild": "node scripts/check-node.cjs",
+    "prebuild": "node scripts/check-node.cjs && npm run database:prepare",
     "test:projects": "node __tests__/integration/projects.mjs",
     "database:create": "node scripts/create-fresh-database.mjs",
-    "test:workspace": "node __tests__/integration/workspace.browser.mjs"
+    "test:workspace": "node __tests__/integration/workspace.browser.mjs",
+    "database:prepare": "node scripts/prepare-database.mjs"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.35",

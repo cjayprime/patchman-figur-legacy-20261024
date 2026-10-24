@@ -1,3 +1,4 @@
+import { databaseName } from './database/name.cjs';
 import { databaseInstance, databasePool } from './database/pool.cjs';
 import { databaseTls } from './database/tls.cjs';
 import { Sequelize } from 'sequelize';
@@ -7,7 +8,7 @@ export const sequelize = databaseInstance(
   'figur',
   () =>
     new Sequelize({
-      database: process.env.DATABASE_NAME || 'patchman_figur_v3',
+      database: databaseName(process.env.DATABASE_NAME),
       dialect: 'mysql',
       dialectModule: mysql2,
       dialectOptions: { bigNumberStrings: true, supportBigNumbers: true, ...databaseTls() },
