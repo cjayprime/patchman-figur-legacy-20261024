@@ -12,6 +12,8 @@ Normal Vercel Functions impose a 4.5 MB request/response limit. Raising Next's b
 
 ## Environment and release sequence
 
+The October 24 public check found that `figur.patchman.io` serves its static model/WASM assets while `/` and `/api/projects` return Vercel `404 NOT_FOUND`. This is a routing/build deployment failure, not a missing model file. The checked-in `vercel.json` explicitly selects the Next.js adapter, `npm run build`, and automatic output detection. Use the project root containing this app's `package.json` and `pages/` (the repository root for a separate Figur repository, or `Figur` for the full ecosystem repository). Do not select `public` or a static export as the deployment output. Redeploy the updated source, then verify real page/API responses before performing authenticated UAT. This configuration does not remove the payload/connection limits discussed above.
+
 1. Use separate explicitly named staging and production databases and credentials. Configure `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD` and `DATABASE_NAME` for each deployment; retain prior databases and backups.
 2. Set `NEXT_PUBLIC_ACCOUNT_URL` before building to that environment's real HTTPS Account origin. Register the exact Figur HTTPS origin in Account's allowlist; configure Account's sibling-domain cookie policy. Keep staging sessions, financial accounts and databases separate from production.
 3. Use `npm ci`, `npm run lint`, `npm run typecheck -- --incremental false` and `npm run build`. Do not copy a localhost validation build to production. Leave `PATCHMAN_BUILD_DIR` unset for the normal `.next` release artifact.
