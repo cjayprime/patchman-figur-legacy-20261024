@@ -10,6 +10,7 @@
   #topbar {
     min-height: 52px;
     padding: 0 12px;
+    gap: 8px;
   }
 
   #panel {
@@ -63,11 +64,32 @@
   }
 
   .lockup {
-    gap: 7px;
+    flex: 1 1 auto;
+    gap: 4px;
+  }
+
+  .lockup-words strong {
+    font-size: 18px;
+  }
+
+  .lockup-words small {
+    font-size: 8px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .figur-menu-toggle {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .header-shortcuts-section {
+    flex: 0 0 auto;
   }
 
   .shared-actions {
-    gap: 6px;
+    gap: 4px;
   }
 
   .shared-projects {
@@ -96,7 +118,4 @@
     letter-spacing: 0;
   }
 
-  body [aria-label="Development sign-in"] {
-    bottom: 80px !important;
-  }
 }

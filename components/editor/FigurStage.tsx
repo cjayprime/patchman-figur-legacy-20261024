@@ -62,11 +62,11 @@ export function FigurStage() {
                 <circle cx="39" cy="158" r="7" fill="#e83e8c" />
                 <circle cx="281" cy="158" r="7" fill="#e83e8c" />
               </svg>
-              <span className="hero-art-badge">PRIVATE • IN YOUR BROWSER</span>
+              <span className="hero-art-badge">BROWSER EDITING • PRIVATE PROJECTS</span>
             </div>
             <h1 className="hero-title">Find Your Baddie.</h1>
             <p className="hero-sub">
-              Shape a portrait with precision, compare every move, and keep the whole edit private.
+              Shape a portrait with precision, compare every move, and save your private project for the next session.
             </p>
             <button id="empty-cta" type="button" className="btn btn-primary btn-lg">
               EDIT YOUR PHOTO{' '}

@@ -3,11 +3,13 @@ import type { NextApiResponse } from 'next';
 
 export class ApiError extends Error {
   readonly statusCode: number;
+  readonly retryAfter?: number;
 
-  constructor(statusCode: number, message: string) {
+  constructor(statusCode: number, message: string, retryAfter?: number) {
     super(message);
     this.name = 'ApiError';
     this.statusCode = statusCode;
+    this.retryAfter = retryAfter;
   }
 }
 

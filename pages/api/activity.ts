@@ -1,18 +1,9 @@
 import { createApiHandler } from '../../lib/api';
-import { accountAccess } from '../../lib/account/access';
-import { ActivityModel } from '../../lib/models/Activity';
-
+import { requireAppAccess } from '../../lib/account/access';
+import { listActivity } from '../../lib/projects/service';
 export default createApiHandler({
   async get(req) {
-    const account = await accountAccess(req);
-    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 25));
-    const offset = Math.max(0, Number(req.query.offset) || 0);
-    const result = await ActivityModel.findAndCountAll({
-      limit,
-      offset,
-      order: [['created_at', 'DESC']],
-      where: { user_id: account.user.id },
-    });
-    return { items: result.rows.map((row) => row.get({ plain: true })), limit, offset, total: result.count };
+    const user = await requireAppAccess(req);
+    return listActivity(user.id, req.query.projectId, req.query.before);
   },
 });

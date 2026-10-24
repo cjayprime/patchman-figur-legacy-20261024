@@ -1,30 +1,19 @@
-import { createApiHandler, ApiError } from '../../../lib/api';
-import { accountAccess } from '../../../lib/account/access';
-import { ProjectModel } from '../../../lib/models/Project';
-
+import { createApiHandler } from '../../../lib/api';
+import { requireAppAccess } from '../../../lib/account/access';
+import { identifier } from '../../../lib/projects/identifiers';
+import { getProject, updateProject, deleteProject } from '../../../lib/projects/service';
 export default createApiHandler({
+  async delete(req) {
+    const user = await requireAppAccess(req);
+    return deleteProject(user.id, identifier(req.query.id, 'project'));
+  },
   async get(req) {
-    const account = await accountAccess(req);
-    const id = typeof req.query.id === 'string' ? req.query.id : '';
-    const project = await ProjectModel.findOne({ where: { id, user_id: account.user.id } });
-    if (!project) {
-      throw new ApiError(404, 'Project not found.');
-    }
-    return { project: project.get({ plain: true }) };
+    const user = await requireAppAccess(req);
+    return { project: await getProject(user.id, identifier(req.query.id, 'project')) };
   },
   async patch(req) {
-    const account = await accountAccess(req);
-    const id = typeof req.query.id === 'string' ? req.query.id : '';
-    const project = await ProjectModel.findOne({ where: { id, user_id: account.user.id } });
-    if (!project) {
-      throw new ApiError(404, 'Project not found.');
-    }
-    const activeTool = typeof req.body?.active_tool === 'string' ? req.body.active_tool : project.get('active_tool');
-    await project.update({
-      active_tool: activeTool,
-      state: req.body?.state ?? project.get('state'),
-      updated_at: new Date(),
-    });
-    return { project: project.get({ plain: true }) };
+    const user = await requireAppAccess(req);
+    return { project: await updateProject(user.id, identifier(req.query.id, 'project'), req.body || {}) };
   },
 });
+export const config = { api: { bodyParser: { sizeLimit: '24mb' } } };

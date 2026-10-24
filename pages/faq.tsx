@@ -1,16 +1,24 @@
-import { StaticPage } from '../components/StaticPage';
+import Head from 'next/head';
+import Link from 'next/link';
 
 export default function FaqPage() {
+  const { title, children } = { children: undefined, title: 'Frequently Asked Questions' } as {
+    title: string;
+    children: React.ReactNode;
+  };
+
   return (
-    <StaticPage title="Frequently Asked Questions">
-      <h2>Does Figur upload my portrait?</h2>
-      <p>The editor processes the portrait in your browser. Project metadata is saved to your account.</p>
-      <h2>How do I compare my edit?</h2>
-      <p>Open Compare and drag the divider, hold the comparison button, or press the space bar.</p>
-      <h2>Can I remove the test pattern?</h2>
-      <p>Select Unload Test Pattern in Advanced, or choose a portrait to replace it.</p>
-      <h2>Where can I get help?</h2>
-      <p>Email support@patchman.io or open Help beside your profile.</p>
-    </StaticPage>
+    <>
+      <Head>
+        <title>{title} | Figur</title>
+      </Head>
+      <main className="figur-static-page">
+        <Link href="/" className="figur-static-back">
+          ← BACK TO FIGUR
+        </Link>
+        <h1>{title}</h1>
+        {children}
+      </main>
+    </>
   );
 }

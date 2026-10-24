@@ -415,3 +415,11 @@ body,
   border-radius: 8px;
   text-align: center;
 }
+
+.patchman-ads-control,.header .patchman-ads-control{display:inline-grid;place-items:center;width:32px;height:32px;min-height:32px;flex-shrink:0;padding:0;border:0;background:transparent;cursor:pointer}.patchman-ads-control:focus-visible{outline:2px solid currentColor;outline-offset:2px}.account-service-notice{position:fixed;bottom:16px;left:16px;right:16px;z-index:900;padding:12px;background:#f3f0e8;color:#282132;border:1px solid #847994;font:13px Arial,sans-serif}.account-service-notice a{color:#5832b9;text-decoration:underline}
+
+.credit-balance,.header .credit-balance{display:inline-flex;align-items:center;gap:5px;background:transparent;border:0;color:inherit;padding:0 4px;min-height:32px;font:11px Arial,sans-serif;cursor:pointer}.credit-balance svg{flex-shrink:0}.credit-balance:focus-visible{outline:2px solid currentColor;outline-offset:3px}@media(max-width:767px){.credit-balance,.header .credit-balance{display:none}}
+
+.project-save-state{position:fixed;bottom:12px;right:14px;z-index:4;background:#fff6fa;color:#5b2941;border:1px solid #d8bdca;padding:7px 10px;font:700 10px Arial,sans-serif;letter-spacing:.06em;pointer-events:none}.project-save-error{position:fixed;bottom:48px;right:14px;z-index:60;width:min(420px,calc(100vw - 28px));background:#fff6fa;color:#5b2941;border:1px solid #bd5a7e;padding:14px}.project-save-error p{margin:0 0 10px}.project-save-error button{margin-right:8px;border:1px solid #a84a75;background:transparent;color:#642843;padding:8px 12px;cursor:pointer}
+
+dialog.project-dialog::backdrop{background:rgba(35,18,28,.58)}dialog.project-dialog:not([open]){display:none}

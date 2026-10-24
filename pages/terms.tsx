@@ -1,10 +1,13 @@
-import { StaticPage } from '../components/StaticPage';
+import type { GetServerSideProps } from 'next';
+
+// One canonical policy covers the shared Patchman account and applications.
+export const getServerSideProps: GetServerSideProps = async () => ({
+  redirect: {
+    destination: 'https://patchman.io/terms/',
+    permanent: false,
+  },
+});
 
 export default function TermsPage() {
-  return (
-    <StaticPage title="Terms">
-      <p>Use Figur only with images you are entitled to edit and export. Keep your account credentials secure.</p>
-      <p>Contact support@patchman.io for assistance with these terms.</p>
-    </StaticPage>
-  );
+  return null;
 }

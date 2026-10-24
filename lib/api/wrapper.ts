@@ -49,11 +49,16 @@ export function createApiHandler(handlers: ApiHandlerMap, options: ApiHandlerOpt
       }
       const candidate = error as {
         statusCode?: number;
+        retryAfter?: number;
         status?: number;
         message?: string;
       };
       const code = candidate?.statusCode ?? candidate?.status ?? 500;
       const statusCode = Number.isInteger(code) && code >= 400 && code <= 599 ? code : 500;
+      if (statusCode === 429) {
+        const retry = candidate?.retryAfter;
+        res.setHeader('Retry-After', String(Number.isInteger(retry) && retry! > 0 && retry! <= 120 ? retry : 60));
+      }
       return sendError(res, candidate?.message ?? 'Internal server error', [], statusCode);
     }
   };

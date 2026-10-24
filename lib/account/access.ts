@@ -1,5 +1,6 @@
+import { accountOrigin } from './url';
+import { accountSessionToken } from './session-token';
 import type { NextApiRequest } from 'next';
-import { readFakeUser } from '../../FakeSignin/server';
 import { ApiError } from '../api/response';
 export interface AccountUser {
   id: string;
@@ -19,26 +20,11 @@ export interface AccountAccess {
 const APP_ID = 'figur';
 const pending = new WeakMap<NextApiRequest, Promise<AccountAccess>>();
 async function verify(req: NextApiRequest): Promise<AccountAccess> {
-  const fake = readFakeUser(req);
-  if (fake) {
-    return {
-      access: true,
-      app: APP_ID,
-      preview: true,
-      subscription_active: false,
-      user: { ...fake, id: fake.user_id },
-    };
-  }
-  const authorization = req.headers.authorization;
-  const token = authorization
-    ? /^Bearer [a-f0-9]{64}$/.test(authorization)
-      ? authorization.slice(7)
-      : ''
-    : req.cookies?.pm_account_session;
+  const token = accountSessionToken(req);
   if (!token || !/^[a-f0-9]{64}$/.test(token)) {
     throw new ApiError(401, 'Sign in through Patchman Account.');
   }
-  const base = new URL(process.env.ACCOUNT_API_URL || 'http://localhost:3001');
+  const base = new URL(accountOrigin());
   if (base.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)) {
     throw new ApiError(503, 'Account requires HTTPS.');
   }
@@ -61,6 +47,14 @@ async function verify(req: NextApiRequest): Promise<AccountAccess> {
   if (response.status === 403) {
     throw new ApiError(403, 'Complete your profile in Patchman Account.');
   }
+  if (response.status === 429) {
+    const delay = Number(response.headers.get('Retry-After'));
+    throw new ApiError(
+      429,
+      'Account access checks are temporarily busy. Keep your work open and try again shortly.',
+      Number.isInteger(delay) && delay > 0 && delay <= 120 ? delay : 60,
+    );
+  }
   if (!response.ok) {
     throw new ApiError(503, 'Account could not verify your subscription.');
   }
@@ -70,6 +64,8 @@ async function verify(req: NextApiRequest): Promise<AccountAccess> {
     !body.status ||
     value?.app !== APP_ID ||
     typeof value?.user?.id !== 'string' ||
+    !/^[1-9][0-9]{0,19}$/.test(value.user.id) ||
+    BigInt(value.user.id) > 18446744073709551615n ||
     typeof value.access !== 'boolean' ||
     typeof value.subscription_active !== 'boolean' ||
     value.preview

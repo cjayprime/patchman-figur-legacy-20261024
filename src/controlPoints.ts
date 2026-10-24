@@ -75,6 +75,12 @@ export class ControlPointStore {
     }
   }
 
+  replace(points: ControlPoint[], selectedId: number | null) {
+    this.points = points.map((point) => ({ ...point }));
+    this.selectedId = selectedId;
+    this.nextId = Math.max(0, ...points.map((point) => point.id)) + 1;
+  }
+
   /** Pack into the MLS control-point arrays. */
   build(): MlsControlPoints {
     const origins: [number, number][] = this.points.map((p) => [p.ox, p.oy]);

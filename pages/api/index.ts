@@ -1,10 +1,8 @@
+import { databaseBudget } from '../../lib/database/pool.cjs';
 import { createApiHandler, sendSuccess } from '../../lib/api';
 
 export const FIGUR_API_REGISTRY = [
   { methods: ['GET'], path: '/api/account/status' },
-  ...(process.env.NODE_ENV === 'development'
-    ? [{ methods: ['GET', 'POST', 'DELETE'], path: '/api/dev/fake-signin' }]
-    : []),
   { methods: ['GET'], path: '/api' },
   { methods: ['GET'], path: '/api/account' },
   { methods: ['GET'], path: '/api/activity' },
@@ -18,6 +16,7 @@ export default createApiHandler({
       res,
       {
         app: 'Figur',
+        database_budget: databaseBudget(),
         endpoints: FIGUR_API_REGISTRY,
         health: {
           checkedAt: new Date().toISOString(),

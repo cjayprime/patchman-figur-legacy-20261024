@@ -1,3 +1,22 @@
+# Shared generated output and private local configuration
+.next*/
+.env*
+!.env.example
+.private*/
+*.key
+*.cert
+*.sql.gz
+*.dump
+/backups/
+/.backups/
+__tests__/.artifacts/
+playwright-report/
+test-results/
+coverage/
+*.tsbuildinfo
+*.log
+.vercel/
+
 # Dependencies
 node_modules/
 .pnp
@@ -5,8 +24,6 @@ node_modules/
 .yarn/install-state.gz
 
 # Next.js and generated builds
-.next/
-.next-dev/
 out/
 build/
 dist/

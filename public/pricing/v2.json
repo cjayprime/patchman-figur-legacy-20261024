@@ -1,0 +1,263 @@
+{
+  "pricing_version": "2026-10-22.v4",
+  "credits_per_usd": 1000,
+  "markup_multiplier": 3,
+  "rates": [
+    {
+      "id": "openai.input",
+      "provider": "openai",
+      "model": "gpt-4.1-mini",
+      "metric": "input_tokens",
+      "usd": "0.40",
+      "per": 1000000,
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "openai.cached",
+      "provider": "openai",
+      "model": "gpt-4.1-mini",
+      "metric": "cached_input_tokens",
+      "usd": "0.10",
+      "per": 1000000,
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "openai.output",
+      "provider": "openai",
+      "model": "gpt-4.1-mini",
+      "metric": "output_tokens",
+      "usd": "1.60",
+      "per": 1000000,
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "openai.transcription",
+      "provider": "openai",
+      "model": "gpt-transcribe",
+      "metric": "audio_ms",
+      "usd": "0.0045",
+      "per": 60000,
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-transcribe",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "openai.speech",
+      "provider": "openai",
+      "model": "tts-1",
+      "metric": "characters",
+      "usd": "15",
+      "per": 1000000,
+      "source_url": "https://developers.openai.com/api/docs/models/tts-1",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "runway.gen4.5",
+      "provider": "runway",
+      "model": "gen4.5",
+      "metric": "video_seconds",
+      "usd": "0.12",
+      "per": 1,
+      "source_url": "https://docs.dev.runwayml.com/guides/pricing/",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "runway.veo3.1",
+      "provider": "runway",
+      "model": "veo3.1",
+      "metric": "video_seconds_without_audio",
+      "usd": "0.20",
+      "per": 1,
+      "source_url": "https://docs.dev.runwayml.com/guides/pricing/",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "runway.veo3.1_fast",
+      "provider": "runway",
+      "model": "veo3.1_fast",
+      "metric": "video_seconds_without_audio",
+      "usd": "0.10",
+      "per": 1,
+      "source_url": "https://docs.dev.runwayml.com/guides/pricing/",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "veo.veo-3.1-generate-preview",
+      "provider": "veo",
+      "model": "veo-3.1-generate-preview",
+      "metric": "720p_seconds_with_audio",
+      "usd": "0.40",
+      "per": 1,
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "verified_at": "2026-10-22",
+      "retired_at": "2026-10-22T00:00:00Z"
+    },
+    {
+      "id": "veo.veo-3.1-fast-generate-preview",
+      "provider": "veo",
+      "model": "veo-3.1-fast-generate-preview",
+      "metric": "720p_seconds_with_audio",
+      "usd": "0.10",
+      "per": 1,
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "verified_at": "2026-10-22",
+      "retired_at": "2026-10-22T00:00:00Z"
+    },
+    {
+      "id": "veo.veo-3.1-lite-generate-preview",
+      "provider": "veo",
+      "model": "veo-3.1-lite-generate-preview",
+      "metric": "720p_seconds_with_audio",
+      "usd": "0.05",
+      "per": 1,
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "verified_at": "2026-10-22",
+      "retired_at": "2026-10-22T00:00:00Z"
+    },
+    {
+      "id": "apimodels.480p",
+      "provider": "apimodels",
+      "model": "wan-3.0-video",
+      "metric": "480p_standard_video_seconds",
+      "usd": "0.045",
+      "per": 1,
+      "source_url": "https://apimodels.app/models/wan-3.0-video",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "apimodels.720p",
+      "provider": "apimodels",
+      "model": "wan-3.0-video",
+      "metric": "720p_standard_video_seconds",
+      "usd": "0.09",
+      "per": 1,
+      "source_url": "https://apimodels.app/models/wan-3.0-video",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "apitaco.480p",
+      "provider": "apitaco",
+      "model": "wan-3.0-video",
+      "metric": "480p_video_seconds",
+      "usd": "0.06",
+      "per": 1,
+      "source_url": "https://apitaco.com/docs/video-api/wan-3-0-video",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "apitaco.720p",
+      "provider": "apitaco",
+      "model": "wan-3.0-video",
+      "metric": "720p_video_seconds",
+      "usd": "0.12",
+      "per": 1,
+      "source_url": "https://apitaco.com/docs/video-api/wan-3-0-video",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "higgsfield.bytedance/seedance-2.0/text-to-video",
+      "provider": "higgsfield",
+      "model": "bytedance/seedance-2.0/text-to-video",
+      "metric": "720p_video_tokens",
+      "usd": "0.014",
+      "per": 1000,
+      "source_url": "https://open.higgsfield.ai/models/bytedance/seedance-2.0/text-to-video/playground",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "higgsfield.bytedance/seedance-2.5/text-to-video",
+      "provider": "higgsfield",
+      "model": "bytedance/seedance-2.5/text-to-video",
+      "metric": "720p_video_tokens",
+      "usd": "0.0214",
+      "per": 1000,
+      "source_url": "https://open.higgsfield.ai/models/bytedance/seedance-2.5/text-to-video/playground",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "higgsfield.kling-video/v3.0/std/text-to-video",
+      "provider": "higgsfield",
+      "model": "kling-video/v3.0/std/text-to-video",
+      "metric": "standard_video_seconds",
+      "usd": "0.084",
+      "per": 1,
+      "source_url": "https://open.higgsfield.ai/models/kling-video/v3.0/std/text-to-video/playground",
+      "verified_at": "2026-10-22"
+    },
+    {
+      "id": "higgsfield.kling-video/v3.0/pro/text-to-video",
+      "provider": "higgsfield",
+      "model": "kling-video/v3.0/pro/text-to-video",
+      "metric": "pro_video_seconds_3_to_15",
+      "usd": "0.168",
+      "per": 1,
+      "source_url": "https://open.higgsfield.ai/models/kling-video/v3.0/pro/text-to-video/playground",
+      "verified_at": "2026-10-22"
+    }
+  ],
+  "operations": {
+    "hookboy.extract_transcribe": [
+      "openai.transcription"
+    ],
+    "hookboy.clean_transcript": [
+      "openai.input",
+      "openai.cached",
+      "openai.output"
+    ],
+    "hookboy.extract_brand": [
+      "openai.input",
+      "openai.cached",
+      "openai.output"
+    ],
+    "hookboy.generate_script": [
+      "openai.input",
+      "openai.cached",
+      "openai.output"
+    ],
+    "hookboy.produce_video": [
+      "openai.speech",
+      "runway.gen4.5",
+      "runway.veo3.1",
+      "runway.veo3.1_fast",
+      "veo.veo-3.1-generate-preview",
+      "veo.veo-3.1-fast-generate-preview",
+      "veo.veo-3.1-lite-generate-preview",
+      "apimodels.480p",
+      "apimodels.720p",
+      "apitaco.480p",
+      "apitaco.720p",
+      "higgsfield.bytedance/seedance-2.0/text-to-video",
+      "higgsfield.bytedance/seedance-2.5/text-to-video",
+      "higgsfield.kling-video/v3.0/std/text-to-video",
+      "higgsfield.kling-video/v3.0/pro/text-to-video"
+    ],
+    "veil.generate_reply": [
+      "openai.input",
+      "openai.cached",
+      "openai.output"
+    ],
+    "harness.plan": [
+      "openai.input",
+      "openai.cached",
+      "openai.output"
+    ],
+    "harness.generate": [
+      "runway.gen4.5",
+      "runway.veo3.1",
+      "runway.veo3.1_fast",
+      "veo.veo-3.1-generate-preview",
+      "veo.veo-3.1-fast-generate-preview",
+      "veo.veo-3.1-lite-generate-preview",
+      "apimodels.480p",
+      "apimodels.720p",
+      "apitaco.480p",
+      "apitaco.720p",
+      "higgsfield.bytedance/seedance-2.0/text-to-video",
+      "higgsfield.bytedance/seedance-2.5/text-to-video",
+      "higgsfield.kling-video/v3.0/std/text-to-video",
+      "higgsfield.kling-video/v3.0/pro/text-to-video"
+    ]
+  }
+}

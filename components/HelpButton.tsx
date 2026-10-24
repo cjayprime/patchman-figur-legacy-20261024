@@ -1,21 +1,21 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { driver, type DriveStep, type Driver } from 'driver.js';
-import AccountDialog from './AccountDialog';
+import { accountSDK } from '../lib/account/sdk';
 import styles from './AccountDialog.module.css';
 
 const STORAGE_KEY = 'patchman:figur:introduction:1';
 const artwork = (src: string) => `<img class="figur-tour-art" src="${src}" alt="" />`;
 
 export default function HelpButton() {
-  const [open, setOpen] = useState(false);
   const tour = useRef<Driver | null>(null);
+  const running = useRef(false);
   const steps = useMemo<DriveStep[]>(
     () => [
       {
         element: '[data-tour="app-header"]',
         popover: {
           align: 'start',
-          description: `${artwork('/tour-shape.svg')}<strong>FIGUR gives artists direct, private control over portrait shape.</strong> Adjust a silhouette, compare against the original, and export without sending the photo away.`,
+          description: `${artwork('/tour-shape.svg')}<strong>FIGUR gives artists direct control over portrait shape.</strong> Edit in your browser, save a private project, compare against the original, and export your finished portrait.`,
           side: 'bottom',
           title: 'Shape the portrait you pictured',
         },
@@ -40,7 +40,7 @@ export default function HelpButton() {
         },
       },
       {
-        element: '[data-figur-projects-tab]',
+        element: '[data-figur-tab="projects"]',
         popover: {
           align: 'center',
           description:
@@ -89,10 +89,27 @@ export default function HelpButton() {
     ],
     [],
   );
-  const onOpen = useCallback(() => setOpen(true), []);
-  const onClose = useCallback(() => setOpen(false), []);
+  const finish = useCallback(() => {
+    if (!running.current) {
+      return;
+    }
+    running.current = false;
+    tour.current = null;
+    try {
+      localStorage.setItem(STORAGE_KEY, 'complete');
+    } catch {
+      // Blocked browser storage must not leave the editor behind a walkthrough.
+    }
+    window.setTimeout(() => {
+      if (!running.current) {
+        window.dispatchEvent(new Event('patchman:walkthrough-end'));
+      }
+    }, 0);
+  }, []);
   const launch = useCallback(() => {
     tour.current?.destroy();
+    finish();
+    running.current = true;
     window.dispatchEvent(new Event('patchman:walkthrough-start'));
     const instance = driver({
       allowClose: true,
@@ -103,20 +120,23 @@ export default function HelpButton() {
       nextBtnText: 'NEXT',
       onCloseClick: (_element, _step, options) => {
         options.driver.destroy();
-        window.setTimeout(() => window.dispatchEvent(new Event('patchman:walkthrough-end')), 0);
+        finish();
       },
-      onDestroyed: () => {
-        localStorage.setItem(STORAGE_KEY, 'complete');
-        tour.current = null;
-        window.setTimeout(() => window.dispatchEvent(new Event('patchman:walkthrough-end')), 0);
+      onDestroyStarted: (_element, _step, options) => {
+        options.driver.destroy();
+        finish();
       },
+      onDestroyed: finish,
       onPopoverRender: (popover, options) => {
-        popover.closeButton.textContent = '×';
+        popover.closeButton.textContent = '\u00d7';
         const skip = document.createElement('button');
         skip.type = 'button';
         skip.className = 'figur-tour-skip';
         skip.textContent = 'SKIP';
-        skip.addEventListener('click', () => options.driver.destroy());
+        skip.addEventListener('click', () => {
+          options.driver.destroy();
+          finish();
+        });
         popover.footerButtons.append(skip);
       },
       overlayColor: '#321020',
@@ -129,13 +149,17 @@ export default function HelpButton() {
     });
     tour.current = instance;
     instance.drive();
-  }, [steps]);
+  }, [steps, finish]);
 
   useEffect(() => {
     window.addEventListener('patchman:launch-introduction', launch);
     let timer: number | undefined;
-    if (localStorage.getItem(STORAGE_KEY) !== 'complete') {
-      timer = window.setTimeout(launch, 0);
+    if (localStorage.getItem(STORAGE_KEY) !== 'complete' && !accountSDK()?.getActiveModal()) {
+      timer = window.setTimeout(() => {
+        if (!accountSDK()?.getActiveModal()) {
+          launch();
+        }
+      }, 0);
     }
     return () => {
       if (timer !== undefined) {
@@ -146,17 +170,25 @@ export default function HelpButton() {
     };
   }, [launch]);
 
+  useEffect(() => {
+    const onAccountOpened = () => {
+      tour.current?.destroy();
+      finish();
+    };
+    window.addEventListener('patchman:account-modal-opened', onAccountOpened);
+    return () => {
+      window.removeEventListener('patchman:account-modal-opened', onAccountOpened);
+    };
+  }, [finish]);
   return (
     <>
-      <button className={styles.help} type="button" onClick={onOpen} aria-label="Open Help" data-tour="help">
+      <button className={styles.help} type="button" data-patchman-modal="help" aria-label="Open Help" data-tour="help">
         <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <circle cx="12" cy="12" r="9.25" />
           <path d="M9.7 9.2a2.5 2.5 0 0 1 4.8.9c0 2.1-2.5 2.2-2.5 4.1" />
           <circle cx="12" cy="17.4" r=".7" fill="currentColor" stroke="none" />
         </svg>
       </button>
-
-      <AccountDialog isOpen={open} onClose={onClose} kind="help" />
     </>
   );
 }

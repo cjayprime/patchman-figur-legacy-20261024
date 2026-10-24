@@ -7,7 +7,7 @@ const prettierConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '.prettie
 module.exports = defineConfig({
   env: { browser: true, commonjs: true, es6: true, jest: true, node: true },
   extends: ['plugin:react/recommended', 'plugin:import/errors', 'plugin:import/warnings', 'plugin:react-perf/recommended', 'prettier'],
-  ignorePatterns: ['node_modules/**', '.next/**', '.next-dev/**', 'out/**', 'build/**', 'dist/**', 'coverage/**', 'next-env.d.ts', 'public/**', 'storage_data/**'],
+  ignorePatterns: ['node_modules/**', '.next*/**', 'out/**', 'build/**', 'dist/**', 'coverage/**', 'next-env.d.ts', 'public/**', 'storage_data/**'],
   parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaFeatures: { jsx: true },
@@ -54,9 +54,9 @@ module.exports = defineConfig({
     'max-len': ['error', { code: prettierConfig.printWidth, comments: prettierConfig.printWidth, tabWidth: prettierConfig.tabWidth, ignoreComments: true, ignoreStrings: true, ignoreTrailingComments: true, ignoreRegExpLiterals: true, ignoreTemplateLiterals: true, ignoreUrls: true }],
   },
   settings: {
-    import: { resolver: { node: { extensions: ['.js', '.jsx', '.ts', '.tsx'], moduleDirectory: ['node_modules', '.'] } } },
+    import: { resolver: { node: { extensions: ['.js', '.jsx', '.ts', '.tsx'], moduleDirectory: ['node_modules'] } } },
     react: { version: 'detect' },
-    'import/resolver': { node: { extensions: ['.js', '.jsx', '.ts', '.tsx'], moduleDirectory: ['node_modules', '.'] } },
+    'import/resolver': { node: { extensions: ['.js', '.jsx', '.ts', '.tsx'], moduleDirectory: ['node_modules'] } },
   },
   overrides: [
     {

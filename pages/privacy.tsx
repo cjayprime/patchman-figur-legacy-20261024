@@ -1,13 +1,13 @@
-import { StaticPage } from '../components/StaticPage';
+import type { GetServerSideProps } from 'next';
+
+// One canonical policy covers the shared Patchman account and applications.
+export const getServerSideProps: GetServerSideProps = async () => ({
+  redirect: {
+    destination: 'https://patchman.io/privacy/',
+    permanent: false,
+  },
+});
 
 export default function PrivacyPage() {
-  return (
-    <StaticPage title="Privacy">
-      <p>
-        Figur performs portrait editing in your browser. Patchman stores only the account and project data needed to
-        provide the service.
-      </p>
-      <p>Contact support@patchman.io with privacy questions.</p>
-    </StaticPage>
-  );
+  return null;
 }

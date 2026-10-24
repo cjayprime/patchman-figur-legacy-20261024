@@ -98,6 +98,16 @@ export class Compositor {
     this.meshLine = gl.createBuffer()!;
   }
 
+  dispose(): void {
+    const gl = this.gl;
+    for (const buffer of [this.quadPos, this.quadUv, this.meshUv, this.meshPos, this.meshTri, this.meshLine]) {
+      gl.deleteBuffer(buffer);
+    }
+    gl.deleteVertexArray(this.vaoQuad);
+    gl.deleteVertexArray(this.vaoMesh);
+    gl.deleteProgram(this.program);
+  }
+
   setMesh(mesh: GridMesh): void {
     const gl = this.gl;
     const W = mesh.width;

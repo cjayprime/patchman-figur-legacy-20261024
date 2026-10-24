@@ -1,3 +1,4 @@
+import AccountSDK from '../components/AccountSDK';
 import type { AppProps } from 'next/app';
 import 'driver.js/dist/driver.css';
 import '../src/style.css';
@@ -6,5 +7,10 @@ import '../styles/globals-tablet.css';
 import '../styles/globals-mobile.css';
 
 export default function FigurApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+  return (
+    <>
+      <AccountSDK />
+      <Component {...pageProps} />
+    </>
+  );
 }
